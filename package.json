@@ -15,11 +15,18 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "nodemon --config nodemon.json",
+    "dev:tsnd": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "create:practitioner": "ts-node-dev --transpile-only scripts/createPractitioner.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "nodemonConfig": {
+    "watch": ["src"],
+    "ext": "ts,json",
+    "exec": "ts-node -T src/server.ts",
+    "ignore": ["dist"]
   },
   "keywords": [],
   "dependencies": {
@@ -36,6 +43,8 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.1",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"
   }

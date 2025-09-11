@@ -3,6 +3,7 @@ import cors from "cors";
 import { env } from "./config/env";
 import authRoutes from "./routes/authRoutes";
 import appointmentRoutes from "./routes/appointmentRoutes";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/users", userRoutes);
 
 // Basic error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
