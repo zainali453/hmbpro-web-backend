@@ -4,6 +4,7 @@ import { env } from "./config/env";
 import authRoutes from "./routes/authRoutes";
 import appointmentRoutes from "./routes/appointmentRoutes";
 import userRoutes from "./routes/userRoutes";
+import practitionerRoutes from "./routes/practitionerRoutes";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.get("/health", (_req, res) => res.json({ status: "ok" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/practitioners", practitionerRoutes);
 
 // Basic error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

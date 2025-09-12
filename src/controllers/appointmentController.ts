@@ -5,27 +5,40 @@ import { AuthenticatedRequest } from "../middleware/auth";
 export async function createAppointment(req: AuthenticatedRequest, res: Response) {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    const { practitioner, date, time, appointmentType, patientInfo, notes } = req.body as {
-      practitioner: string;
-      date: string;
-      time: string;
-      appointmentType: "initial" | "followup";
-      patientInfo: {
-        firstName: string; lastName: string; dateOfBirth: string; placeOfBirth?: string; email: string; phone: string; concern: string; medicalHistory?: string;
-      };
-      notes?: string;
-    };
+    
+    // Accept patient fields at root level (not nested)
+    const {
+      practitioner,
+      date,
+      time,
+      appointmentType,
+      firstName,
+      lastName,
+      dateOfBirth,
+      placeOfBirth,
+      email,
+      phone,
+      concern,
+      medicalHistory,
+      notes
+    } = req.body;
 
-    if (!practitioner || !date || !time || !appointmentType || !patientInfo) {
+    // Validate required fields
+    if (!practitioner || !date || !time || !appointmentType || !firstName || !lastName || !dateOfBirth || !email || !phone || !concern) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const requiredPatientFields: (keyof typeof patientInfo)[] = ["firstName", "lastName", "dateOfBirth", "email", "phone", "concern"] as any;
-    for (const field of requiredPatientFields) {
-      if (!(patientInfo as any)[field]) {
-        return res.status(400).json({ message: `patientInfo.${String(field)} is required` });
-      }
-    }
+    // Construct patientInfo object for the model
+    const patientInfo = {
+      firstName,
+      lastName,
+      dateOfBirth,
+      placeOfBirth,
+      email,
+      phone,
+      concern,
+      medicalHistory
+    };
 
     const appointment = await AppointmentModel.create({
       patient: req.user.userId,
