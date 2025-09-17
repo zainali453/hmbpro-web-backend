@@ -17,13 +17,18 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 
 // Basic error handler
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  // eslint-disable-next-line no-console
-  console.error(err);
-  res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
-});
+app.use(
+  (
+    err: any,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    console.error(err);
+    res
+      .status(err.status || 500)
+      .json({ message: err.message || "Internal Server Error" });
+  }
+);
 
 export default app;
-
-

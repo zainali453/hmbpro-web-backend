@@ -13,7 +13,7 @@
   "license": "ISC",
   "author": "Moiz",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon --config nodemon.json",
     "dev:tsnd": "ts-node-dev --respawn --transpile-only src/server.ts",
@@ -23,10 +23,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "nodemonConfig": {
-    "watch": ["src"],
+    "watch": [
+      "src"
+    ],
     "ext": "ts,json",
     "exec": "ts-node -T src/server.ts",
-    "ignore": ["dist"]
+    "ignore": [
+      "dist"
+    ]
   },
   "keywords": [],
   "dependencies": {
