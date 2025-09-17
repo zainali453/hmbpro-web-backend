@@ -47,8 +47,19 @@ async function main() {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await UserModel.create({ name, email, passwordHash, role: "practitioner" });
-  console.log("✅ Practitioner created:", { id: user.id, email: user.email, name: user.name, role: user.role });
+  const user = await UserModel.create({ 
+    firstName: name.split(' ')[0] || 'Dr.',
+    lastName: name.split(' ').slice(1).join(' ') || 'Smith',
+    email, 
+    passwordHash, 
+    dateOfBirth: new Date('1980-01-01'), // Default date
+    phone: '555-0000', // Default phone
+    concern: 'General Practice', // Default concern
+    agreeToTerms: true,
+    agreeToPrivacy: true,
+    role: "practitioner" 
+  });
+  console.log("✅ Practitioner created:", { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role });
   await mongoose.disconnect();
 }
 

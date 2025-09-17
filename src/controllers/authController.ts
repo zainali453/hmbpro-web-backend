@@ -11,35 +11,65 @@ function signToken(userId: string, role: UserRole): string {
 
 export async function signup(req: Request, res: Response) {
   try {
-    const { name, email, password } = req.body as {
-      name: string;
-      email: string;
-      password: string;
-    };
-    if (!name || !email || !password)
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      dateOfBirth,
+      placeOfBirth,
+      phone,
+      concern,
+      agreeToTerms,
+      agreeToPrivacy
+    } = req.body;
+
+    // Accept boolean true or string 'true' for agreeToTerms and agreeToPrivacy
+    const agreeToTermsBool = agreeToTerms === true || agreeToTerms === "true";
+    const agreeToPrivacyBool = agreeToPrivacy === true || agreeToPrivacy === "true";
+
+    // Validate required fields
+    if (!firstName || !lastName || !email || !password || !dateOfBirth || !phone || !concern || !agreeToTermsBool || !agreeToPrivacyBool) {
       return res.status(400).json({ message: "Missing required fields" });
+    }
+
     const existing = await UserModel.findOne({ email });
-    if (existing)
-      return res.status(409).json({ message: "Email already in use" });
+    if (existing) return res.status(409).json({ message: "Email already in use" });
+
     const passwordHash = await bcrypt.hash(password, 10);
+
+    // Handle profilePicture upload (multer will add req.file if present)
+    let profilePicture: string | undefined = undefined;
+    if (req.file) {
+      profilePicture = req.file.path;
+    }
+
     const user = await UserModel.create({
-      name,
+      firstName,
+      lastName,
       email,
       passwordHash,
-      role: "patient",
+      dateOfBirth,
+      placeOfBirth,
+      phone,
+      concern,
+      profilePicture,
+      agreeToTerms: agreeToTermsBool,
+      agreeToPrivacy: agreeToPrivacyBool,
+      role: "patient"
     });
+
     const token = signToken(user.id, user.role);
-    return res
-      .status(201)
-      .json({
-        token,
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      });
+    return res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (error) {
     return res.status(500).json({ message: "Signup failed" });
   }
@@ -55,17 +85,16 @@ export async function login(req: Request, res: Response) {
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
     const token = signToken(user.id, user.role);
-    return res
-      .status(200)
-      .json({
-        token,
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      });
+    return res.status(200).json({ 
+      token, 
+      user: { 
+        id: user.id, 
+        firstName: user.firstName, 
+        lastName: user.lastName, 
+        email: user.email, 
+        role: user.role 
+      } 
+    });
   } catch (error) {
     return res.status(500).json({ message: "Login failed" });
   }
@@ -74,15 +103,14 @@ export async function login(req: Request, res: Response) {
 export async function me(req: AuthenticatedRequest, res: Response) {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    const user = await UserModel.findById(req.user.userId).select(
-      "name email role"
-    );
+    const user = await UserModel.findById(req.user.userId).select("firstName lastName email role");
     if (!user) return res.status(404).json({ message: "User not found" });
-    return res.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
+    return res.json({ 
+      id: user.id, 
+      firstName: user.firstName, 
+      lastName: user.lastName, 
+      email: user.email, 
+      role: user.role 
     });
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch profile" });

@@ -20,6 +20,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "create:practitioner": "ts-node-dev --transpile-only scripts/createPractitioner.ts",
+    "seed:practitioners": "ts-node-dev --transpile-only scripts/seedPractitioners.ts",
+    "setup": "ts-node-dev --transpile-only scripts/setupAndStart.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "nodemonConfig": {
@@ -34,12 +36,14 @@
   },
   "keywords": [],
   "dependencies": {
+    "@types/multer": "^2.0.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.1"
+    "mongoose": "^8.18.1",
+    "multer": "^2.0.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
